@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
@@ -42,16 +44,31 @@ import androidx.compose.ui.unit.sp
 import com.example.jettrivia.model.QuestionItem
 import com.example.jettrivia.screens.QuestionsViewModel
 import com.example.jettrivia.util.AppColors
+import java.lang.Exception
 
 @Composable
 fun Questions(viewModel: QuestionsViewModel){
     val questions = viewModel.data.value.data?.toMutableList()
+
+    val questionIndex = remember {
+        mutableStateOf(0 )
+    }
+
     if(viewModel.data.value.loading == true){
         CircularProgressIndicator()
 
     }else {
+        val question = try {
+            questions?.get(questionIndex.value)
+        }catch (ex: Exception){
+            null
+        }
+
       if (questions != null){
-            QuestionDisplay(question = questions.first())
+            QuestionDisplay(question = question!!, questionIndex = questionIndex,
+            viewModel = viewModel){
+                questionIndex.value = questionIndex.value +1
+            }
         }
     }
 }
@@ -60,8 +77,8 @@ fun Questions(viewModel: QuestionsViewModel){
 fun QuestionDisplay(
 
     question: QuestionItem,
-   // questionIndex: MutableState<Int>,
-    // viewModel: QuestionsViewModel,
+    questionIndex: MutableState<Int>,
+    viewModel: QuestionsViewModel,
     onNextClicked: (Int) -> Unit = {}
 ){
    val choicesState = remember(question) {
@@ -82,14 +99,13 @@ fun QuestionDisplay(
     val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f,10f), 0f)
     androidx.compose.material.Surface(modifier = Modifier
         .fillMaxWidth()
-        .fillMaxHeight()
-        .padding(4.dp),
+        .fillMaxHeight(),
         color = AppColors.mDarkPurple
         ) {
             Column(modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start){
-                    QuestionTracker()
+                    QuestionTracker(counter = questionIndex.value)
                 DrawDottedLine(pathEffect)
 
                 Column {
@@ -138,8 +154,32 @@ fun QuestionDisplay(
                                         Color.Red.copy(alpha = 0.2f)
                                     }))//end rb
 
-                            Text(text = answerText)
+                            val annotatedString = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Light,
+                                color =   if (correctAnswerState.value == true  && index == answerState.value){
+                                    Color.Green
+                                }else if(correctAnswerState.value == false
+                                    && index == answerState.value){
+                                    Color.Red
+                                }else {AppColors.mOffWhite},
+                                fontSize =  17.sp)){
+                                        append(answerText)
+                                }
+                            }
+                                Text(text = annotatedString, modifier = Modifier.padding(6.dp))
                         }
+                    }
+                    Button(onClick = {onNextClicked(questionIndex.value)}, modifier = Modifier
+                        .padding(3.dp)
+                        .align(alignment = Alignment.CenterHorizontally),
+                        shape = RoundedCornerShape(34.dp),
+                       colors = ButtonDefaults.buttonColors(
+                           backgroundColor = AppColors.mLightBlue
+                       ) ) {
+                        Text (text = "Next" ,
+                        modifier = Modifier.padding(4.dp),
+                        color = AppColors.mOffWhite,
+                        fontSize = 17.sp)
                     }
                 }
 
