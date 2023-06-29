@@ -1,10 +1,14 @@
 package com.example.jettrivia.component
 
+import androidx.compose.ui.graphics.PathEffect
+
 import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
@@ -12,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -40,6 +45,7 @@ fun Questions(viewModel: QuestionsViewModel){
 @Preview
 @Composable
 fun QuestionDisplay(){
+    val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f,10f), 0f)
     androidx.compose.material.Surface(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
@@ -50,9 +56,25 @@ fun QuestionDisplay(){
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start){
                     QuestionTracker()
+                DrawDottedLine(pathEffect)
+
             }
     }
 }
+@Composable
+fun DrawDottedLine(pathEffect: PathEffect){
+Canvas(modifier = Modifier
+    .fillMaxWidth()
+    .height(1.dp),
+     ){
+    drawLine(color = AppColors.mLightGray, start = Offset(0f,0f), end = Offset(size.width, y = 0f),
+    pathEffect= pathEffect)
+}
+}
+
+
+
+
 @Preview
 @Composable
 fun QuestionTracker(counter: Int = 10, outOf: Int = 100){
