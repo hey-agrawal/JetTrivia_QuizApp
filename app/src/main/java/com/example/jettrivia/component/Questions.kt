@@ -48,7 +48,13 @@ import java.lang.Exception
 
 @Composable
 fun Questions(viewModel: QuestionsViewModel){
-    val questions = viewModel.data.value.data?.toMutableList()
+    val questions = listOf(
+        QuestionItem("Deepak", "NameBatao", listOf("Deepak Choudhary", "Piyush", "prasoon", "Navneet"), "Name kya hai teacher ka?"),
+        QuestionItem("Deepak", "NameBatao", listOf("Deepak Choudhary", "Piyush", "prasoon", "Navneet"), "Name kya hai teacher ka?"),
+        QuestionItem("Deepak", "NameBatao", listOf("Deepak Choudhary", "Piyush", "prasoon", "Navneet"), "Name kya hai teacher ka?"),
+        QuestionItem("Deepak", "NameBatao", listOf("Deepak Choudhary", "Piyush", "prasoon", "Navneet"), "Name kya hai teacher ka?")
+    ) // viewModel.data.value.data?.toMutableList()
+
 
     val questionIndex = remember {
         mutableStateOf(0 )
